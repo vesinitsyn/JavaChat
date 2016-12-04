@@ -19,21 +19,30 @@ public class Server {
      */
     private ArrayList<PrintWriter> writers;
 
-    public Server(int port) throws IOException {
-        this.server = new ServerSocket(port);
-        this.writers = new ArrayList<>();
-        launch();
+    public Server(int port) {
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
+            this.server = serverSocket;
+            this.writers = new ArrayList<>();
+            launch();
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
     }
 
     /**
      * Starts server.
      */
-    private void launch() throws IOException {
+    private void launch() {
         while (true) {
-            Socket socket = server.accept();
+            try {
+                Socket socket = server.accept();
+                writers.add(new PrintWriter(socket.getOutputStream()));
+                /* Add socket's outputStream to pull of streams. */
 
-            writers.add(new PrintWriter(socket.getOutputStream())); /* Add socket's outputStream to pull of streams. */
-            handleNewClient(socket);
+                handleNewClient(socket);
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }
         }
     }
 
@@ -49,19 +58,23 @@ public class Server {
      * The class that takes message from one socket and send it to all registered sockets.
      */
     private class ClientHandler implements Runnable {
+
+        private Socket socket;
         private ObjectInputStream reader;
 
         public ClientHandler(Socket socket) throws IOException {
-            this.reader = new ObjectInputStream(socket.getInputStream());
+            this.socket = socket;
         }
 
         @Override
         public void run() {
             Message message;
 
-            try {
+            try (ObjectInputStream stream = new ObjectInputStream(socket.getInputStream())) {
+                this.reader = stream;
+
                 while ((message = (Message) reader.readObject()) != null) { // until end of stream is reached
-                    System.out.println(message);
+
                     for (PrintWriter writer : writers) {
                         sendToClient(writer, message);
                     }

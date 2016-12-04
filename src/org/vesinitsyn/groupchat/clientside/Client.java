@@ -12,11 +12,13 @@ import java.util.Observable;
 public class Client extends Observable {
 
     /**
-     *  Person's name.
+     * Person's name.
      */
     private String name;
     private ObjectOutputStream writer;
     private BufferedReader reader;
+    private Socket socket;
+    private boolean close = false;
 
     public Client(String host, int port, String personsName) throws IOException {
         this(host, port);
@@ -24,7 +26,7 @@ public class Client extends Observable {
     }
 
     public Client(String host, int port) throws IOException {
-        Socket socket = new Socket(host, port);
+        this.socket = new Socket(host, port);
         this.writer = new ObjectOutputStream(socket.getOutputStream());
         this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         launch();
@@ -52,13 +54,18 @@ public class Client extends Observable {
             String message;
 
             try {
-                while ((message = reader.readLine()) != null) {
+                while ((message = reader.readLine()) != null && !close) {
                     setChanged();
                     notifyObservers(message); // notify observers who are listening to this client e.g. UI
                     clearChanged();
                 }
             } catch (IOException exception) {
                 exception.printStackTrace();
+            } finally {
+                try {
+                    socket.close();
+                } catch (IOException ex) {
+                }
             }
         }
     }
@@ -69,5 +76,9 @@ public class Client extends Observable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void closeClient() {
+        this.close = true;
     }
 }

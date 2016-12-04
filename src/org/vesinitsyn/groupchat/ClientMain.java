@@ -23,9 +23,11 @@ public class ClientMain {
         System.out.println("Start conversation..");
 
         String command;
-        while ((command = reader.readLine()) != null) {
+        while (!(command = reader.readLine()).equals("exit")) {
             client.sendToServer(command);
         }
+
+        client.closeClient();
     }
 }
 
