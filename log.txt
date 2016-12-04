@@ -10,3 +10,15 @@ java.io.EOFException
 	at java.io.ObjectInputStream.readObject(ObjectInputStream.java:371)
 	at org.vesinitsyn.groupchat.serverside.Server$ClientHandler.run(Server.java:76)
 	at java.lang.Thread.run(Thread.java:745)
+java.io.EOFException
+	at java.io.ObjectInputStream$BlockDataInputStream.peekByte(ObjectInputStream.java:2601)
+	at java.io.ObjectInputStream.readObject0(ObjectInputStream.java:1319)
+	at java.io.ObjectInputStream.readObject(ObjectInputStream.java:371)
+	at org.vesinitsyn.groupchat.serverside.Server$ClientHandler.run(Server.java:76)
+	at java.lang.Thread.run(Thread.java:745)
+java.io.EOFException
+	at java.io.ObjectInputStream$BlockDataInputStream.peekByte(ObjectInputStream.java:2601)
+	at java.io.ObjectInputStream.readObject0(ObjectInputStream.java:1319)
+	at java.io.ObjectInputStream.readObject(ObjectInputStream.java:371)
+	at org.vesinitsyn.groupchat.serverside.Server$ClientHandler.run(Server.java:76)
+	at java.lang.Thread.run(Thread.java:745)

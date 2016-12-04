@@ -18,7 +18,6 @@ public class Client extends Observable {
     private ObjectOutputStream writer;
     private BufferedReader reader;
     private Socket socket;
-    private boolean close = false;
 
     public Client(String host, int port, String personsName) throws IOException {
         this(host, port);
@@ -54,7 +53,7 @@ public class Client extends Observable {
             String message;
 
             try {
-                while ((message = reader.readLine()) != null && !close) {
+                while ((message = reader.readLine()) != null) {
                     setChanged();
                     notifyObservers(message); // notify observers who are listening to this client e.g. UI
                     clearChanged();
@@ -63,6 +62,7 @@ public class Client extends Observable {
                 exception.printStackTrace();
             } finally {
                 try {
+                    System.out.println("finally");
                     socket.close();
                 } catch (IOException ex) {
                 }
@@ -79,6 +79,11 @@ public class Client extends Observable {
     }
 
     public void closeClient() {
-        this.close = true;
+        try {
+            socket.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        System.exit(0);
     }
 }
